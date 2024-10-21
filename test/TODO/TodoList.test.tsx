@@ -1,9 +1,13 @@
 import "@testing-library/jest-dom";
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import TodoList from "@/Components/TODO/TodoList";
 
 describe("TodoList component", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   test("renders the title and list of todos", () => {
     render(<TodoList />);
 
@@ -21,12 +25,14 @@ describe("TodoList component", () => {
     render(<TodoList />);
 
     const input: HTMLInputElement = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "New task" } });
+
     const button = screen.getByRole("button", { name: /Add/i });
+    fireEvent.click(button);
 
-    input.value = "New task";
-    button.click();
-
-    expect(screen.getByText(/New task/i)).toBeInTheDocument();
+    // 新しいタスクがテキストとして表示されることを確認
+    const todoText = screen.getByText(/new task/i);
+    expect(todoText).toBeInTheDocument(); // 期待通りタスクが表示されていることを確認
   });
 
   test("toggles a todo", () => {
